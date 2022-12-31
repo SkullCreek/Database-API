@@ -1,2 +1,3 @@
-# ignore all logs
+# ignore all logs and links
+databaseUri.py
 *.log

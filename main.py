@@ -62,6 +62,61 @@ def select_table():
         ans = postgre_conn.select(row,table_name,condition)
         return jsonify(ans)
 
+@app.route('/mongodb/insert',methods=['GET','POST'])
+def insert():
+    if request.method == 'POST':
+        dbname = request.json['dbname']
+        colname = request.json['colname']
+        link = request.json['link']
+        mongo = con.MongoDB()
+        mongo.connect()
+        mongo.create_db(dbname)
+        mongo.create_collection(colname)
+        mongo.insert(link)
+        return jsonify("successfully inserted the data")
+
+@app.route('/mongodb/update',methods=['GET','POST'])
+def update():
+    if request.method == 'POST':
+        dbname = request.json['dbname']
+        colname = request.json['colname']
+        select = request.json['select']
+        update = request.json['update']
+        mongo = con.MongoDB()
+        mongo.connect()
+        mongo.create_db(dbname)
+        mongo.create_collection(colname)
+        mongo.update(select,update)
+        return jsonify("successfully updated the data")
+
+@app.route('/mongodb/delete',methods=['GET','POST'])
+def delete():
+    if request.method == 'POST':
+        dbname = request.json['dbname']
+        colname = request.json['colname']
+        query = request.json['query']
+        mongo = con.MongoDB()
+        mongo.connect()
+        mongo.create_db(dbname)
+        mongo.create_collection(colname)
+        mongo.delete(query)
+        return jsonify("successfully deleted the data")
+
+@app.route('/mongodb/select',methods=['GET','POST'])
+def select():
+    if request.method == 'POST':
+        dbname = request.json['dbname']
+        colname = request.json['colname']
+        query = request.json['query']
+        mongo = con.MongoDB()
+        mongo.connect()
+        mongo.create_db(dbname)
+        mongo.create_collection(colname)
+        ans = mongo.select(query)
+        dist = {"data":list(ans)}
+        return jsonify(str(dist))
+
+
 
 if __name__ == "__main__":
     app.run()

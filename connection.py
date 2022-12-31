@@ -1,8 +1,10 @@
 import psycopg2 as pst
+import pymongo
 from sqlalchemy import create_engine
 import pandas as pd
 import urllib
 import logging
+import databaseUri
 
 
 class PostgreSql:
@@ -72,4 +74,45 @@ class PostgreSql:
 
 
 class MongoDB:
-    pass
+    def __int__(self):
+        pass
+    def connect(self):
+        try:
+            self.uri = databaseUri.mongo_uri
+            self.client = pymongo.MongoClient(self.uri)
+        except Exception as e:
+            logging.critical(e)
+    def create_db(self,name):
+        try:
+            self.db = self.client[name]
+        except Exception as e:
+            logging.warning(e)
+    def create_collection(self,col_name):
+        try:
+            self.col = self.db[col_name]
+        except Exception as e:
+            logging.warning(e)
+    def insert(self,link):
+        try:
+            self.df = pd.read_csv(link)
+            self.data = self.df.to_dict(orient='records')
+            self.col.insert_many(self.data)
+        except Exception as e:
+            logging.warning(e)
+    def update(self, select, update):
+        try:
+            self.col.update_many(select,update)
+        except Exception as e:
+            logging.warning(e)
+    def delete(self, query):
+        try:
+            self.col.delete_many(query)
+        except Exception as e:
+            logging.warning(e)
+    def select(self,query):
+        try:
+            self.res = self.col.find(query)
+            logging.info(self.res)
+            return self.res
+        except Exception as e:
+            logging.warning(e)
